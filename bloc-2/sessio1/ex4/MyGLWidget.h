@@ -6,7 +6,7 @@
 #include <QKeyEvent>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "model.h"
+#include "Model/model.h"
 
 class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core 
 {
@@ -39,17 +39,14 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     // attribute locations
     GLuint vertexLoc, colorLoc;
     // uniform locations
-    GLuint transLoc;
-    GLuint projLoc ;
-    GLuint viewLoc ;
+    GLuint transLoc, projLoc, viewLoc ;
 
     GLuint VAO; //VAO_HOMER
-    // VAO names
-    GLuint VAO_Casa;
     // Program
     QOpenGLShaderProgram *program;
     // Internal vars
     float scale;
     glm::vec3 pos;
+    Model model;
 };
 

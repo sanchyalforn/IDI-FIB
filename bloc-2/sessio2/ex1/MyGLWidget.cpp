@@ -19,13 +19,14 @@ void MyGLWidget::initializeGL () {
   glClearColor(0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
   createBuffers();
+  glEnable(GL_DEPTH_TEST);
 }
 
 void MyGLWidget::paintGL () {
   glViewport (0, 0, width(), height()); // Aquesta crida no caldria perquè Qt la fa de forma automàtica amb aquests paràmetres
   
   // Esborrem el frame-buffer
-  glClear (GL_COLOR_BUFFER_BIT);
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Carreguem la transformació de model
   modelTransform ();
@@ -37,10 +38,10 @@ void MyGLWidget::paintGL () {
   viewTransform();
 
   // Activem el VAO per a pintar la caseta 
-  glBindVertexArray (VAO_Casa);
+  glBindVertexArray (VAO);
 
   // pintem
-  glDrawArrays(GL_TRIANGLES, 0, 9);
+  glDrawArrays(GL_TRIANGLES, 0, 3*model.faces().size());
 
   glBindVertexArray (0);
 }
@@ -49,6 +50,7 @@ void MyGLWidget::modelTransform () {
   // Matriu de transformació de model
   glm::mat4 transform (1.0f);
   transform = glm::scale(transform, glm::vec3(scale));
+  transform = glm::rotate(transform, float(M_PI),glm::vec3(0,1,0));
   glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
@@ -103,33 +105,27 @@ void MyGLWidget::createBuffers () {
 	glm::vec3(0,1,0),
 	glm::vec3(0,0,1)
   };
-    
-  Model vectorModels[3]; //array de 3 models
-  vector <Model> models; //vector stl de models
+
 
   //carreguem arxiu .obj del model
-  Model homer;
-  homer.load("../../HomerProves.obj");
-
-  //acces als VBOs
-  glBufferData(,homer.VBO_vertices(),GL_STATIC_DRAW); //posicio
-  glBufferData(,homer.VBO_matdiff (),GL_STATIC_DRAW); //color
+  model.load("../../../models/HomerProves.obj");
 
   // Creació del Vertex Array Object per pintar
-  glGenVertexArrays(1, &VAO_Casa);
-  glBindVertexArray(VAO_Casa);
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
 
-  GLuint VBO_Casa[2];
-  glGenBuffers(2, VBO_Casa);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_Casa[0]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(posicio), posicio, GL_STATIC_DRAW);
+  GLuint VBO_vertexs, VBO_color;
+  glGenBuffers(1, &VBO_vertexs);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_vertexs);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*model.faces().size()*3*3, model.VBO_vertices(), GL_STATIC_DRAW);
 
-  // Activem l'atribut vertexLoc
+// Activem l'atribut vertexLoc
   glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(vertexLoc);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO_Casa[1]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
+  
+  glGenBuffers(1,&VBO_color);
+  glBindBuffer(GL_ARRAY_BUFFER,VBO_color);
+  glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*model.faces().size()*3*3,model.VBO_matdiff(),GL_STATIC_DRAW);
 
   // Activem l'atribut colorLoc
   glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
