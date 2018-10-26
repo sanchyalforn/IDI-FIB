@@ -56,6 +56,9 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     glm::vec3 centreBasePatr;
     float escala;
 
-    glm::vec3 OBS,VRP,up;
+    glm::vec3 OBS = glm::vec3(2.5,1.0,6.5);
+    glm::vec3 VRP = glm::vec3(2.5,1.0,2.5);
+    glm::vec3 up  = glm::vec3(0,1,0);
+
 };
 

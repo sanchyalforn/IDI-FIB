@@ -55,8 +55,7 @@ void MyGLWidget::resizeGL (int w, int h)  {
   // Aquí anirà el codi que cal fer quan es redimensiona la finestra
 }
 
-void MyGLWidget::modelTransformPatricio ()
-{
+void MyGLWidget::modelTransformPatricio () {
   glm::mat4 TG(1.f);  // Matriu de transformació
   TG = glm::translate(TG, glm::vec3 (4.0, 0, 3.5));
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
@@ -78,17 +77,13 @@ void MyGLWidget::projectTransform () {
 }
 
 void MyGLWidget::viewTransform () {
-  glm::mat4 View;  // Matriu de posició i orientació
-  //lookAt(OBS,VRP,up)
-  OBS  = glm::vec3(2.5,1.0,6.5);
-  VRP  = glm::vec3(2.5,1.0,2.5);
-  up   = glm::vec3(0,1,0); 
-  View = glm::lookAt(OBS,VRP,up);
-  View = glm::translate(View,glm::vec3(0,0,(3*sqrt(6))));
-  View = glm::rotate(View,float(M_PI/9.0),glm::vec3(1,0,0));
-  View = glm::rotate(View,float(M_PI/4.0),glm::vec3(0,1,0));
+  glm::mat4 View;  // Matriu de posició i orientació 
+ 
+  View = glm::translate(View,glm::vec3(0,0,-(3*sqrt(6))));
+  View = glm::rotate(View, float(M_PI/9.0),glm::vec3(1,0,0));
+  View = glm::rotate(View,-float(M_PI/4.0),glm::vec3(0,1,0));
   View = glm::translate(View,-VRP);
-
+  
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
@@ -223,28 +218,27 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)  {
   makeCurrent();
   switch (event->key()) {
     case Qt::Key_1: { 
-      // aquesta tecla ha de canviar de càmera i posar la càmera 1 de 1ª persona
+        VRP = glm::vec3(5.0,1.0,5.0);
 
       break;
     }
     case Qt::Key_2: { 
-      // aquesta tecla ha de canviar de càmera i posar la càmera 2 de 1ª persona
+        VRP = glm::vec3(5.0,1.0,5.0);
 
       break;
     }
     case Qt::Key_3: { 
-      // aquesta tecla ha de canviar de càmera i posar la càmera 3 de 1ª persona
+        VRP = glm::vec3(0.0,1.0,0.0);
 
       break;
     }
     case Qt::Key_4: { 
-      // aquesta tecla ha de canviar de càmera i posar la càmera 4 de 1ª persona
+        VRP = glm::vec3(0.0,1.0,5.0);
 
       break;
     }
     case Qt::Key_0: { 
-      // aquesta tecla ha de fer que la càmera sigui la càmera en 3ª persona 
-      // amb els paràmetres inicials
+        VRP = glm::vec3(2.5,1.0,2.5);
 
       break;
     }
