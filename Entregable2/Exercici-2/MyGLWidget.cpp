@@ -24,8 +24,13 @@ void MyGLWidget::initializeGL () {
 }
  
 void MyGLWidget::iniCamera () {
-  projectTransform ();
-  viewTransform ();
+    R = sqrt(6);
+    d = 3*R;
+    //R = distance(glm::vec3(minx,miny,minz),glm::vec3(maxx,maxy,maxz));
+    //d = 3*R;
+    projectTransform ();
+    viewTransform ();
+
 }
 
 void MyGLWidget::paintGL ()  {
@@ -52,7 +57,8 @@ void MyGLWidget::paintGL ()  {
 }
 
 void MyGLWidget::resizeGL (int w, int h)  {
-  // Aquí anirà el codi que cal fer quan es redimensiona la finestra
+
+    FOV = 2* asin(R/d);
 }
 
 void MyGLWidget::modelTransformPatricio () {
@@ -70,21 +76,26 @@ void MyGLWidget::modelTransformTerra () {
 }
 
 void MyGLWidget::projectTransform () {
-  glm::mat4 Proj;  // Matriu de projecció
-  Proj = glm::perspective(float(M_PI/3.0), 1.0f, 2.0f, 8.0f);
-
-  glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
+    glm::mat4 Proj;  // Matriu de projecció
+    //znear = R - d;
+    //zfar  = R + d;
+    Proj = glm::perspective((change ? float(M_PI/2.0) : float(M_PI/3.0)), 1.0f, znear, zfar);
+    glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
 void MyGLWidget::viewTransform () {
-  glm::mat4 View;  // Matriu de posició i orientació 
- 
-  View = glm::translate(View,glm::vec3(0,0,-(3*sqrt(6))));
-  View = glm::rotate(View, float(M_PI/9.0),glm::vec3(1,0,0));
-  View = glm::rotate(View,-float(M_PI/4.0),glm::vec3(0,1,0));
-  View = glm::translate(View,-VRP);
-  
-  glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
+    glm::mat4 View;  // Matriu de posició i orientació 
+    
+    if (change) 
+        View = glm::lookAt(OBS,VRP,up);
+    else {
+        View = glm::translate(View,glm::vec3(0,0,-d));
+        View = glm::rotate(View, float(M_PI/9.0),glm::vec3(1,0,0));
+        View = glm::rotate(View,-float(M_PI/4.0),glm::vec3(0,1,0));
+        View = glm::translate(View,-VRP);
+    }
+    
+    glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
 void MyGLWidget::createBuffersModel () {
@@ -137,8 +148,7 @@ void MyGLWidget::createBuffersTerra () {
   // Fem que aquest material afecti a tots els vèrtexs per igual
   glm::vec3 colterra[6] = {
 	color, color, color, color, color, color
-  };
-
+};
 // Creació del Vertex Array Object del terra
   glGenVertexArrays(1, &VAO_Terra);
   glBindVertexArray(VAO_Terra);
@@ -191,7 +201,7 @@ void MyGLWidget::carregaShaders() {
 
 void MyGLWidget::calculaCapsaModel () {
   // Càlcul capsa contenidora i valors transformacions inicials
-  float minx, miny, minz, maxx, maxy, maxz;
+  
   minx = maxx = patr.vertices()[0];
   miny = maxy = patr.vertices()[1];
   minz = maxz = patr.vertices()[2];
@@ -218,28 +228,38 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)  {
   makeCurrent();
   switch (event->key()) {
     case Qt::Key_1: { 
-        VRP = glm::vec3(5.0,1.0,5.0);
-
-      break;
+        OBS    = glm::vec3(5.0,1.0,5.0);
+        change = true;
+        projectTransform();
+        viewTransform();
+        break;
     }
     case Qt::Key_2: { 
-        VRP = glm::vec3(5.0,1.0,5.0);
-
+        OBS    = glm::vec3(5.0,1.0,0.0);
+        change = true;
+        projectTransform();
+        viewTransform();
       break;
     }
     case Qt::Key_3: { 
-        VRP = glm::vec3(0.0,1.0,0.0);
-
+        OBS    = glm::vec3(0.0,1.0,0.0);
+        change = true; 
+        projectTransform();
+        viewTransform();
       break;
     }
     case Qt::Key_4: { 
-        VRP = glm::vec3(0.0,1.0,5.0);
-
+        OBS    = glm::vec3(0.0,1.0,5.0);
+        change = true;
+        projectTransform();
+        viewTransform();
       break;
     }
     case Qt::Key_0: { 
-        VRP = glm::vec3(2.5,1.0,2.5);
-
+        OBS    = glm::vec3(2.5,1.0,2.5);
+        change = false;
+        projectTransform();
+        viewTransform();
       break;
     }
     default: event->ignore(); break;
