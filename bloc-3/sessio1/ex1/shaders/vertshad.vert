@@ -8,6 +8,7 @@ in vec3 matdiff;
 in vec3 matspec;
 in float matshin;
 
+
 uniform mat4 proj;
 uniform mat4 view;
 uniform mat4 TG;
@@ -54,8 +55,16 @@ vec3 Phong (vec3 NormSCO, vec3 L, vec4 vertSCO)
     return (colRes + matspec * colFocus * shine); 
 }
 
-void main()
-{	
-    fcolor = matdiff;
+void main() {	
     gl_Position = proj * view * TG * vec4 (vertex, 1.0);
+
+    mat3 nMatrix   = inverse(transpose(mat3(view * TG)));
+    vec3 NormSCO   = normalize(nMatrix * normal);
+    vec4 vertexSCO = view * TG * vec4(vertex, 1.0);
+    vec4 focusSCO  = view * vec4(posFocus, 1.0);
+    vec4 L         = focusSCO - vertexSCO;
+    vec3 Lxyz      = normalize(L.xyz);
+    fcolor         = Lambert (NormSCO, Lxyz);
+
+
 }
