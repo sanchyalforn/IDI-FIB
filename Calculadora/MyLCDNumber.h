@@ -12,6 +12,7 @@ public:
 
     int op1;
     int op2;
+    int res;
     bool absolut;
 
 
@@ -21,7 +22,7 @@ public slots:
     void div();
     void mult();
     void reset();
-    void acumul();
+    //void acumula();
     void setAbs(bool b);
     void setOp1(int n);
     void setOp2(int n);

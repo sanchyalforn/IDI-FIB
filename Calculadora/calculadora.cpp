@@ -1,12 +1,14 @@
 #include "calculadora.h"
 #include "ui_calculadora.h"
 
-calculadora::calculadora(QWidget *parent) :
+Calculadora::Calculadora(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::calculadora) {
+    ui(new Ui::Calculadora)
+{
     ui->setupUi(this);
 }
 
-calculadora::~calculadora() {
+Calculadora::~Calculadora()
+{
     delete ui;
 }

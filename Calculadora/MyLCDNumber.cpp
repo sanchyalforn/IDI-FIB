@@ -1,7 +1,7 @@
 #include "MyLCDNumber.h"
 
 
-MyLCDNumber::MyLCDNumber(QWidget *parent) : MyLCDNumber(parent) {}
+//MyLCDNumber::MyLCDNumber(QWidget *parent) : MyLCDNumber(parent) {}
 
 //MyLCDNumber::~MyLCDNumber(){}
 
