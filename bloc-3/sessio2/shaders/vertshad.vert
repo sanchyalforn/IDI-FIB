@@ -3,11 +3,11 @@
 in vec3 vertex;
 in vec3 normal;
 
-in vec3 matamb;
-in vec3 matdiff;
-in vec3 matspec;
+in vec3  matamb;
+in vec3  matdiff;
+in vec3  matspec;
 in float matshin;
-
+in mat3  nMat;
 
 uniform mat4 proj;
 uniform mat4 view;
@@ -17,6 +17,12 @@ uniform mat4 TG;
 uniform vec3 colFocus = vec3(0.8, 0.8, 0.8);
 uniform vec3 llumAmbient = vec3(0.2, 0.2, 0.2);
 uniform vec3 posFocus = vec3(1, 1, 1);  // en SCA
+
+out vec4 vertSCO;
+vec3 NormSCO;
+vec3 Lxyz;
+vec4 L;
+uniform vec4 focusSCO;
 
 out vec3 fcolor;
 
@@ -57,14 +63,14 @@ vec3 Phong (vec3 NormSCO, vec3 L, vec4 vertSCO)
 
 void main() {	
     
-    gl_Position         = proj * view * TG * vec4 (vertex, 1.0);
-    mat3 nMatrix        = inverse(transpose(mat3(view * TG)));
-    vec3 NormSCO        = normalize(nMatrix * normal);
-    out vec4 vertexSCO  = view * TG * vec4(vertex, 1.0);
-    vec4 focusSCO       = view * vec4(posFocus, 1.0);
-    vec4 L              = focusSCO - vertexSCO;
-    vec3 Lxyz           = normalize(L.xyz);
-    fcolor              = Lambert (NormSCO, Lxyz);
-
+    gl_Position = proj * view * TG * vec4 (vertex, 1.0);
+    nMat        = view * TG;
+    //mat3 nMatrix        = inverse(transpose(mat3(view * TG))); // MyGLWidget
+    NormSCO     = normalize(nMat * normal); //Vertexshader
+    vertSCO     = view * TG * vec4(vertex, 1.0); //Vertexshader
+    focusSCO    = view * vec4(posFocus, 1.0); //Frag, pero li passo claculat
+    L           = focusSCO - vertSCO; //Frag
+    Lxyz        = normalize(L.xyz); //Frag
+    fcolor      = Lambert (NormSCO, Lxyz); //Frag
 
 }

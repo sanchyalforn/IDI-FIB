@@ -26,8 +26,18 @@ void MyGLWidget::initializeGL ()
   createBuffersPatricio();
   createBuffersTerraIParet();
 
+  
+ 
   iniEscena();
   iniCamera();
+
+  
+  //nmatrix la passem al vertex
+  nmat  = inverse(transpose(glm::mat3(View * TG)));
+  glUniformMatrix3fv (nMatLoc, 1, &nmat, &TG[0][0]);
+  
+  
+  
 }
 
 void MyGLWidget::iniEscena ()
@@ -269,13 +279,24 @@ void MyGLWidget::carregaShaders()
 
   // Demanem identificadors per als uniforms del vertex shader
   transLoc = glGetUniformLocation (program->programId(), "TG");
-  projLoc = glGetUniformLocation (program->programId(), "proj");
-  viewLoc = glGetUniformLocation (program->programId(), "view");
+  projLoc  = glGetUniformLocation (program->programId(), "proj");
+  viewLoc  = glGetUniformLocation (program->programId(), "view");
+  
+  //Calcul al frag
+  nMatLoc    = glGetUniformLocation (program->programId(), "nMat");
+  vertSCOLoc = glGetUniformLocation (program->programId(), "vertSCO"); 
+  
+  colFocusLoc= glGetUniformLocation (program->programId(), "colFocus");
+  posFocusLoc= glGetUniformLocation (program->programId(), "posFocus");
+  
+  colFocus = glm::vec3(0.8,0.8,0.8);
+  posFocus = glm::vec3(1,1,1);
+  
+  
 }
 
-void MyGLWidget::modelTransformPatricio ()
-{
-  glm::mat4 TG(1.f);  // Matriu de transformació
+void MyGLWidget::modelTransformPatricio () {
+  TG = glm::mat4(1.f);
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
   TG = glm::translate(TG, -centrePatr);
   
@@ -299,17 +320,14 @@ void MyGLWidget::projectTransform ()
   glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
-void MyGLWidget::viewTransform ()
-{
-  glm::mat4 View;  // Matriu de posició i orientació
+void MyGLWidget::viewTransform () {
   View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc));
   View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
 
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
-void MyGLWidget::calculaCapsaModel ()
-{
+void MyGLWidget::calculaCapsaModel () {
   // Càlcul capsa contenidora i valors transformacions inicials
   float minx, miny, minz, maxx, maxy, maxz;
   minx = maxx = patr.vertices()[0];

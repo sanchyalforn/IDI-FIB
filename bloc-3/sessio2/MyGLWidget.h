@@ -55,6 +55,14 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     GLuint transLoc, projLoc, viewLoc;
     // attribute locations
     GLuint vertexLoc, normalLoc, matambLoc, matdiffLoc, matspecLoc, matshinLoc;
+    
+    GLuint nMatLoc, vertSCOLoc;
+    
+    glm::mat4 View;  // Matriu de posició i orientació
+    glm::mat4 TG;  // Matriu de transformació
+    
+    glm::vec3 colFocus;
+    glm::vec3 posFocus;
 
     // model
     Model patr;
@@ -63,6 +71,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     float escala;
     // radi de l'escena
     float radiEsc;
+    
+    glm::mat3 nmat;
 
     typedef  enum {NONE, ROTATE} InteractiveAction;
     InteractiveAction DoingInteractive;
