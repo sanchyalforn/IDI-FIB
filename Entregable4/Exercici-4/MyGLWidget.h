@@ -20,7 +20,24 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 
   protected:
     // initializeGL - Aqui incluim les inicialitzacions del contexte grafic.
-    virtual void initializeGL ( );2,  asdasdasdasdid carregaShaders ();
+    virtual void initializeGL ( );
+    // paintGL - Mètode cridat cada cop que cal refrescar la finestra.
+    // Tot el que es dibuixa es dibuixa aqui.
+    virtual void paintGL ( );
+    // resizeGL - És cridat quan canvia la mida del widget
+    virtual void resizeGL (int width, int height);
+    // keyPressEvent - Es cridat quan es prem una tecla
+    virtual void keyPressEvent (QKeyEvent *event);
+    // mouse{Press/Release/Move}Event - Són cridades quan es realitza l'event 
+    // corresponent de ratolí
+    virtual void mousePressEvent (QMouseEvent *event);
+    virtual void mouseReleaseEvent (QMouseEvent *event);
+    virtual void mouseMoveEvent (QMouseEvent *event);
+
+  private:
+    void createBuffersModel ();
+    void createBuffersTerraIParet ();
+    void carregaShaders ();
     void iniEscena ();
     void iniCamera ();
     void projectTransform ();
@@ -30,6 +47,14 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void modelTransformModel2 ();
     void modelTransformCamera ();
     void calculaCapsaModel ();
+    
+    void moureUP();
+    void moureDOWN();
+    
+    float p1x = 0.0,
+		  p1z = 0.0,
+		  p2x = 0.0,
+		  p2z = 0.0;
 
     // VAO names
     GLuint VAO_Patr;
@@ -50,6 +75,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     // radi de l'escena
     float radiEsc;
     
+    GLuint vistaLoc;
     int vista = 0;
 
     typedef  enum {NONE, ROTATE} InteractiveAction;

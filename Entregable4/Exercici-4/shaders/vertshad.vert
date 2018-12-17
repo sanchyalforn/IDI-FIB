@@ -15,26 +15,37 @@ out float matshin1;
 
 out vec3 L;
 out vec4 vertexSCO;
+out vec3 NormSCO;
 
 uniform mat4 proj;
 uniform mat4 view;
 uniform mat4 TG;
 
-// Valors per als components que necessitem dels focus de llum
-vec3 colFocus = vec3(0.8, 0.8, 0.8);
-vec3 llumAmbient = vec3(0.2, 0.2, 0.2);
-vec3 posFocus = vec3(1, 1, 1);  // en SCA
-
+uniform vec3 colFocus;
+uniform vec3 llumAmbient;
+uniform vec4 posFocus;
 out vec3 fcolor;
 
+uniform int vista;
+
+
 void main() {	
-    fcolor = matdiff;
+    fcolor = colFocus;
     gl_Position = proj * view * TG * vec4 (vertex, 1.0);
     
     matamb1  = matamb;
     matdiff1 = matdiff;
     matspec1 = matspec;
     matshin1 = matshin;
+    
     vertexSCO = view * TG * vec4 (vertex, 1.0);
-    L = vec3(posFocus - vertexSCO);
+    
+    if (vista == 0) {
+		L = vec3(posFocus - vertexSCO);
+	}
+    else {
+		vec4 posFocusAux = view * posFocus;
+		L = vec3(posFocusAux - vertexSCO);
+	}
+    NormSCO = inverse(transpose(mat3(view * TG))) * normal;
 }

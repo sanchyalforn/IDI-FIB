@@ -11,8 +11,8 @@ in vec3 matdiff1;
 in vec3 matspec1;
 in float matshin1;
 
-in vec3 
-
+in vec3 NormSCO;
+in vec4 vertexSCO;
 in vec3 L;
 
 vec3 Lambert (vec3 NormSCO, vec3 L) {
@@ -51,10 +51,12 @@ vec3 Phong (vec3 NormSCO, vec3 L, vec4 vertSCO)  {
 
 void main() {	
     
-	FragColor = vec4(fcolor,1);
-	
-	vec3 L2, normSCO2;
+	vec3 L2, NormSCO2;
 	vec3 f2;
 	
 	L2 = normalize(L);
+	NormSCO2 = normalize(NormSCO);
+	
+	f2 = Phong(NormSCO2, L2, vertexSCO);
+	FragColor = vec4(f2,1);
 }

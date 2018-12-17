@@ -35,8 +35,7 @@ void MyGLWidget::iniEscena ()
   radiEsc = sqrt(12);  // sqrt(4+4+4)
 }
 
-void MyGLWidget::iniCamera ()
-{
+void MyGLWidget::iniCamera () {
   angleY = 0.0;
   perspectiva = true;
 
@@ -63,6 +62,7 @@ void MyGLWidget::paintGL ()
   glBindVertexArray (VAO_Patr);
 
   modelTransformModel ();
+  modelTransformCamera();
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
   
   modelTransformModel2 ();
@@ -71,11 +71,23 @@ void MyGLWidget::paintGL ()
   glBindVertexArray(0);
 }
 
+
+void MyGLWidget::resizeGL(int w, int h) {
+    
+}
+/*
 void MyGLWidget::resizeGL (int w, int h) 
 {
-  // Aquí anirà el codi que cal fer quan es redimensiona la finestra
-  // En aquest exercici no es demana...
-}
+  glViewport(0, 0, w, h);
+  rav = (float)w / (float)h;
+	if (rav < 1) FOV = 2 * atan(tan(FOV_i/2.0f) / rav);
+	else FOV = 2 * asin(radi / d);
+	if (first) {
+		FOV_i = FOV;
+		first=false;
+	}
+  projectTransform();
+}*/
 
 void MyGLWidget::createBuffersModel ()
 {
@@ -169,7 +181,7 @@ void MyGLWidget::createBuffersTerraIParet ()
   // Definim el material del terra
   glm::vec3 amb(0.2,0,0.2);
   glm::vec3 diff(0.2,0.2,0.6);
-  glm::vec3 spec(0,0,0);
+  glm::vec3 spec(0.6,0.6,0.6);
   float shin = 100;
 
   // Fem que aquest material afecti a tots els vèrtexs per igual
@@ -276,6 +288,32 @@ void MyGLWidget::carregaShaders()
   colFocus = glGetUniformLocation (program->programId(), "colFocus");
   posFocus = glGetUniformLocation (program->programId(), "posFocus");
   llumAmbient = glGetUniformLocation (program->programId(), "llumAmbient");
+  
+  vistaLoc = glGetUniformLocation (program->programId(), "vista");
+}
+
+void MyGLWidget::moureUP() {
+	if (vista == 1) {
+		p1x += 0.25;
+		p1z -= 0.25;
+	}
+	
+	if (vista == 2) {
+		p2x -= 0.25;
+		p2z -= 0.25;
+	}
+}
+
+void MyGLWidget::moureDOWN() {
+	if (vista == 1) {
+		p1x -= 0.25;
+		p1z += 0.25;
+	}
+	
+	if (vista == 2) {
+		p2x += 0.25;
+		p2z += 0.25;
+	}
 }
 
 void MyGLWidget::modelTransformCamera() {
@@ -284,41 +322,41 @@ void MyGLWidget::modelTransformCamera() {
 
   glm::vec3 llum = glm::vec3(0.2,0.2,0.2);
   glUniform3fv(llumAmbient, 1, &llum[0]);
-
-  glm::vec4 pos = glm::vec4(0,0,0,1);
+  glm::vec4 pos;
+  if (vista == 0) pos = glm::vec4(1,1,1,1);
+  else if (vista == 1) pos = glm::vec4(-1.5+p1x,1,1.5+p1z,1);
+  else pos = glm::vec4(1.5+p2x,0,1.5+p2z,1);
+  
   glUniform4fv(posFocus, 1, &pos[0]);
-
   glUniform1i((float)130*M_PI/180, 3);
 }
 
 void MyGLWidget::modelTransformModel () {
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::translate(TG, glm::vec3(-1.5, -2.0, 1.5));
-  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
+  TG = glm::translate(TG, glm::vec3(-1.5+p1x, -2.0, 1.5+p1z));
   TG = glm::rotate(TG,float(130*M_PI/180),glm::vec3(0,1,0));
+  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
   TG = glm::translate(TG, -centreBasePatr);
-  
+
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
 void MyGLWidget::modelTransformModel2 () {
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::translate(TG, glm::vec3(1.5, -2.0, 1.5));
-  TG = glm::scale(TG, glm::vec3(escala/2, escala/2, escala/2));
+  TG = glm::translate(TG, glm::vec3(1.5+p2x, -2.0, 1.5+p2z));  
   TG = glm::rotate(TG,float(-130*M_PI/180),glm::vec3(0,1,0));
+  TG = glm::scale(TG, glm::vec3(escala/2, escala/2, escala/2));
   TG = glm::translate(TG, -centreBasePatr);
   
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::modelTransformTerra ()
-{
+void MyGLWidget::modelTransformTerra () {
   glm::mat4 TG(1.f);  // Matriu de transformació
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::projectTransform ()
-{
+void MyGLWidget::projectTransform () {
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
     Proj = glm::perspective(float(M_PI/3.0), 1.0f, radiEsc, 3.0f*radiEsc);
@@ -328,8 +366,7 @@ void MyGLWidget::projectTransform ()
   glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
-void MyGLWidget::viewTransform ()
-{
+void MyGLWidget::viewTransform () {
   glm::mat4 View;  // Matriu de posició i orientació
   View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc));
   View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
@@ -337,15 +374,13 @@ void MyGLWidget::viewTransform ()
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
 
-void MyGLWidget::calculaCapsaModel ()
-{
+void MyGLWidget::calculaCapsaModel () {
   // Càlcul capsa contenidora i valors transformacions inicials
   float minx, miny, minz, maxx, maxy, maxz;
   minx = maxx = patr.vertices()[0];
   miny = maxy = patr.vertices()[1];
   minz = maxz = patr.vertices()[2];
-  for (unsigned int i = 3; i < patr.vertices().size(); i+=3)
-  {
+  for (unsigned int i = 3; i < patr.vertices().size(); i+=3) {
     if (patr.vertices()[i+0] < minx)
       minx = patr.vertices()[i+0];
     if (patr.vertices()[i+0] > maxx)
@@ -363,8 +398,7 @@ void MyGLWidget::calculaCapsaModel ()
   centreBasePatr[0] = (minx+maxx)/2.0; centreBasePatr[1] = miny; centreBasePatr[2] = (minz+maxz)/2.0;
 }
 
-void MyGLWidget::keyPressEvent(QKeyEvent* event) 
-{
+void MyGLWidget::keyPressEvent(QKeyEvent* event) {
   makeCurrent();
   switch (event->key()) {
     case Qt::Key_O: { // canvia òptica entre perspectiva i axonomètrica
@@ -373,16 +407,41 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
       break;
     }
     case Qt::Key_F: {
-      (++vista)%3;
+      ++vista;
+      vista = vista%3;
       break;
     }
+    case Qt::Key_Up: {
+		if (vista == 1) {
+			p1x += 0.25;
+			p1z -= 0.25;
+		}
+		
+		if (vista == 2) {
+			p2x -= 0.25;
+			p2z -= 0.25;
+		}
+		break;
+	}
+	
+	case Qt::Key_Down: {
+		if (vista == 1) {
+			p1x -= 0.25;
+			p1z += 0.25;
+		}
+		
+		if (vista == 2) {
+			p2x += 0.25;
+			p2z += 0.25;
+		}
+		break;
+	}
     default: event->ignore(); break;
   }
   update();
 }
 
-void MyGLWidget::mousePressEvent (QMouseEvent *e)
-{
+void MyGLWidget::mousePressEvent (QMouseEvent *e) {
   xClick = e->x();
   yClick = e->y();
 
@@ -393,17 +452,14 @@ void MyGLWidget::mousePressEvent (QMouseEvent *e)
   }
 }
 
-void MyGLWidget::mouseReleaseEvent( QMouseEvent *)
-{
+void MyGLWidget::mouseReleaseEvent( QMouseEvent *) {
   DoingInteractive = NONE;
 }
 
-void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
-{
+void MyGLWidget::mouseMoveEvent(QMouseEvent *e) {
   makeCurrent();
   // Aqui cal que es calculi i s'apliqui la rotacio o el zoom com s'escaigui...
-  if (DoingInteractive == ROTATE)
-  {
+  if (DoingInteractive == ROTATE) {
     // Fem la rotació
     angleY += (e->x() - xClick) * M_PI / 180.0;
     viewTransform ();
