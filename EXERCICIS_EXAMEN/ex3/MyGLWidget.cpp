@@ -6,6 +6,7 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent), program(NULL)
 {
   setFocusPolicy(Qt::StrongFocus);  // per rebre events de teclat
   xClick = yClick = 0;
+  rightClicky = rightClickx = 0;
   DoingInteractive = NONE;
 }
 
@@ -30,18 +31,19 @@ void MyGLWidget::initializeGL ()
   iniCamera();
 }
 
-void MyGLWidget::iniEscena ()
-{
+void MyGLWidget::iniEscena () {
   radiEsc = sqrt(5);  
 }
 
-void MyGLWidget::iniCamera ()
-{
+void MyGLWidget::iniCamera () {
   angleY = 0.0;
   perspectiva = true;
-
+  ra = 1.0f;
+  FOV = float(M_PI/3.0);
+  angleinit = FOV/2;
   projectTransform ();
   viewTransform ();
+  //modelTransformCamara();
 }
 
 void MyGLWidget::paintGL () 
@@ -73,7 +75,12 @@ void MyGLWidget::paintGL ()
 }
 
 void MyGLWidget::resizeGL (int w, int h) {
-  // Aquí anirà el codi que cal fer quan es redimensiona la finestra
+  
+  glViewport(0, 0, w, h);
+  float raV = float(w)/float(h);
+  ra = raV;
+  if (raV < 1.0) FOV = 2.0f*atan(tan(angleinit)/raV);
+  projectTransform();
 }
 
 void MyGLWidget::createBuffersPatricio ()
@@ -274,6 +281,19 @@ void MyGLWidget::carregaShaders()
   viewLoc = glGetUniformLocation (program->programId(), "view");
 }
 
+/*
+void MyGLWidget::modelTransformCamara (){
+  glm::vec3 color = glm::vec3(0.0,0.8,0.8);
+  glUniform3fv(colFocus, 1, &color[0]);
+
+  glm::vec3 llum = glm::vec3(0.2,0.2,0.2);
+  glUniform3fv(llumAmbient, 1, &llum[0]);
+
+  glm::vec4 pos = glm::vec4(0,0,0,1);
+  glUniform4fv(posFocus, 1, &pos[0]);
+}
+*/
+
 void MyGLWidget::modelTransformPatricio1 ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
@@ -298,11 +318,10 @@ void MyGLWidget::modelTransformTerra ()
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::projectTransform ()
-{
+void MyGLWidget::projectTransform () {
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
-    Proj = glm::perspective(float(M_PI/3.0), 1.0f, radiEsc, 3.0f*radiEsc);
+    Proj = glm::perspective(FOV, 1.0f, radiEsc, 3.0f*radiEsc);
   else
     Proj = glm::ortho(-radiEsc, radiEsc, -radiEsc, radiEsc, radiEsc, 3.0f*radiEsc);
 
@@ -364,10 +383,11 @@ void MyGLWidget::mousePressEvent (QMouseEvent *e)
   yClick = e->y();
 
   if (e->button() & Qt::LeftButton &&
-      ! (e->modifiers() & (Qt::ShiftModifier|Qt::AltModifier|Qt::ControlModifier)))
+      !(e->modifiers() & (Qt::ShiftModifier|Qt::AltModifier|Qt::ControlModifier)))
   {
     DoingInteractive = ROTATE;
   }
+
 }
 
 void MyGLWidget::mouseReleaseEvent( QMouseEvent *)
@@ -375,15 +395,26 @@ void MyGLWidget::mouseReleaseEvent( QMouseEvent *)
   DoingInteractive = NONE;
 }
 
-void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
-{
+void MyGLWidget::mouseMoveEvent(QMouseEvent *e) {
   makeCurrent();
   // Aqui cal que es calculi i s'apliqui la rotacio o el zoom com s'escaigui...
-  if (DoingInteractive == ROTATE)
-  {
+  if (DoingInteractive == ROTATE) {
     // Fem la rotació
     angleY += (e->x() - xClick) * M_PI / 180.0;
     viewTransform ();
+  }
+
+  if (e -> button() == Qt::RightButton) {
+    if (rightClicky < yClick && FOV  >= 0) {
+      FOV -= 0.1;
+    }
+
+    else if (rightClicky > yClick && FOV < 3) {
+      FOV += 0.1;
+    }
+    update();
+    viewTransform();
+    rightClicky = yClick;
   }
 
   xClick = e->x();
@@ -391,5 +422,3 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
 
   update ();
 }
-
-

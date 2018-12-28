@@ -43,6 +43,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void projectTransform ();
     void viewTransform ();
     void modelTransformTerra ();
+    //void modelTransformCamara ();
     void modelTransformPatricio1 ();
     void modelTransformPatricio2 ();
     void calculaCapsaModel ();
@@ -63,12 +64,15 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     glm::vec3 centrePatr;
     float escala;
     // radi de l'escena
-    float radiEsc;
+    float radiEsc, ra;
+    float FOV, angleinit;
 
     typedef  enum {NONE, ROTATE} InteractiveAction;
     InteractiveAction DoingInteractive;
     int xClick, yClick;
     float angleY;
     bool perspectiva;
+
+    int rightClickx, rightClicky;
 };
 
