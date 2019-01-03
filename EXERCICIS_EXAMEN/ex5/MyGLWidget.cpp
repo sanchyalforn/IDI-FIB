@@ -341,11 +341,11 @@ void MyGLWidget::modelTransformCow()
 {
   glm::mat4 TG (1.f);
   glm::vec3  pos (1.0,-0.75,0.0);
-  TG = glm::translate(TG, pos);
+  TG = glm::translate (TG, pos);
   TG = glm::scale(TG, glm::vec3(escalaCow, escalaCow, escalaCow));
-  TG = glm::translate(TG, -centreCow);
   TG = glm::rotate(TG, -(float)M_PI/2 ,glm::vec3(0,1,0));
   TG = glm::rotate(TG, -(float)M_PI/2 ,glm::vec3(1,0,0));
+  TG = glm::translate(TG, -centreCow);
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 
 }
@@ -353,8 +353,9 @@ void MyGLWidget::modelTransformCow()
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
-  TG = glm::translate(TG, -centrePatr);
+  TG = glm::translate (TG, glm::vec3(1,0.25,0));
+  TG = glm::scale (TG, glm::vec3(escala, escala, escala));
+  TG = glm::translate (TG, -centrePatr);
   
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
@@ -362,6 +363,7 @@ void MyGLWidget::modelTransformPatricio ()
 void MyGLWidget::modelTransformTerra ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
+  TG = glm::translate (TG, glm::vec3(1,-0.5,0));
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
