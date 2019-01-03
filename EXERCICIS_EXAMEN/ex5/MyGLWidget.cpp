@@ -136,7 +136,7 @@ void MyGLWidget::createBuffersCow ()
   glVertexAttribPointer(matshinLoc, 1, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(matshinLoc);
 
-glBindVertexArray(0);
+  glBindVertexArray(0);
 }
 
 void MyGLWidget::createBuffersPatricio ()
@@ -434,7 +434,7 @@ void MyGLWidget::calculaCapsaCow ()
       maxz = Cow.vertices()[i+2];
   }
 
-  escalaCow = 2.0/(maxy-miny);
+  escalaCow = 1.0/(maxy-miny);
   centreCow[0] = (minx+maxx)/2.0; centreCow[1] = (miny+maxy)/2.0; centreCow[2] = (minz+maxz)/2.0;
 }
 
