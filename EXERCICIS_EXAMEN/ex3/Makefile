@@ -115,6 +115,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -203,6 +204,7 @@ Makefile: examen.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf 
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -281,6 +283,7 @@ Makefile: examen.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf 
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -357,6 +360,98 @@ compiler_moc_header_make_all: moc_MyForm.cpp moc_MyGLWidget.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_MyForm.cpp moc_MyGLWidget.cpp
 moc_MyForm.cpp: ui_MyForm.h \
+		MyGLWidget.h \
+		glm/glm.hpp \
+		glm/detail/_fixes.hpp \
+		glm/detail/setup.hpp \
+		glm/simd/platform.h \
+		glm/fwd.hpp \
+		glm/detail/type_int.hpp \
+		glm/detail/type_float.hpp \
+		glm/detail/type_vec.hpp \
+		glm/detail/qualifier.hpp \
+		glm/detail/compute_vector_relational.hpp \
+		glm/detail/type_mat.hpp \
+		glm/vec2.hpp \
+		glm/detail/type_vec2.hpp \
+		glm/detail/_swizzle.hpp \
+		glm/detail/_swizzle_func.hpp \
+		glm/detail/type_vec2.inl \
+		glm/vec3.hpp \
+		glm/detail/type_vec3.hpp \
+		glm/detail/type_vec3.inl \
+		glm/vec4.hpp \
+		glm/detail/type_vec4.hpp \
+		glm/detail/type_vec4.inl \
+		glm/detail/type_vec4_simd.inl \
+		glm/mat2x2.hpp \
+		glm/detail/type_mat2x2.hpp \
+		glm/detail/type_mat2x2.inl \
+		glm/matrix.hpp \
+		glm/mat2x3.hpp \
+		glm/detail/type_mat2x3.hpp \
+		glm/detail/type_mat2x3.inl \
+		glm/mat2x4.hpp \
+		glm/detail/type_mat2x4.hpp \
+		glm/detail/type_mat2x4.inl \
+		glm/mat3x2.hpp \
+		glm/detail/type_mat3x2.hpp \
+		glm/detail/type_mat3x2.inl \
+		glm/mat3x3.hpp \
+		glm/detail/type_mat3x3.hpp \
+		glm/detail/type_mat3x3.inl \
+		glm/mat3x4.hpp \
+		glm/detail/type_mat3x4.hpp \
+		glm/detail/type_mat3x4.inl \
+		glm/mat4x2.hpp \
+		glm/detail/type_mat4x2.hpp \
+		glm/detail/type_mat4x2.inl \
+		glm/mat4x3.hpp \
+		glm/detail/type_mat4x3.hpp \
+		glm/detail/type_mat4x3.inl \
+		glm/mat4x4.hpp \
+		glm/detail/type_mat4x4.hpp \
+		glm/detail/type_mat4x4.inl \
+		glm/detail/type_mat4x4_simd.inl \
+		glm/detail/func_matrix.inl \
+		glm/geometric.hpp \
+		glm/detail/func_geometric.inl \
+		glm/exponential.hpp \
+		glm/detail/type_vec1.hpp \
+		glm/detail/func_exponential.inl \
+		glm/vector_relational.hpp \
+		glm/detail/func_vector_relational.inl \
+		glm/detail/func_vector_relational_simd.inl \
+		glm/detail/_vectorize.hpp \
+		glm/detail/func_exponential_simd.inl \
+		glm/simd/exponential.h \
+		glm/common.hpp \
+		glm/detail/func_common.inl \
+		glm/detail/func_common_simd.inl \
+		glm/simd/common.h \
+		glm/detail/func_geometric_simd.inl \
+		glm/simd/geometric.h \
+		glm/detail/func_matrix_simd.inl \
+		glm/simd/matrix.h \
+		glm/trigonometric.hpp \
+		glm/detail/func_trigonometric.inl \
+		glm/detail/func_trigonometric_simd.inl \
+		glm/packing.hpp \
+		glm/detail/func_packing.inl \
+		glm/detail/type_half.hpp \
+		glm/detail/type_half.inl \
+		glm/detail/func_packing_simd.inl \
+		glm/integer.hpp \
+		glm/detail/func_integer.inl \
+		glm/ext/vec1.hpp \
+		glm/detail/type_vec1.inl \
+		glm/detail/func_integer_simd.inl \
+		glm/simd/integer.h \
+		glm/gtc/matrix_transform.hpp \
+		glm/gtc/constants.hpp \
+		glm/gtc/constants.inl \
+		glm/gtc/matrix_transform.inl \
+		Model/model.h \
 		MyForm.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -570,11 +665,195 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 ####### Compile
 
 main.o: main.cpp MyForm.h \
-		ui_MyForm.h
+		ui_MyForm.h \
+		MyGLWidget.h \
+		glm/glm.hpp \
+		glm/detail/_fixes.hpp \
+		glm/detail/setup.hpp \
+		glm/simd/platform.h \
+		glm/fwd.hpp \
+		glm/detail/type_int.hpp \
+		glm/detail/type_float.hpp \
+		glm/detail/type_vec.hpp \
+		glm/detail/qualifier.hpp \
+		glm/detail/compute_vector_relational.hpp \
+		glm/detail/type_mat.hpp \
+		glm/vec2.hpp \
+		glm/detail/type_vec2.hpp \
+		glm/detail/_swizzle.hpp \
+		glm/detail/_swizzle_func.hpp \
+		glm/detail/type_vec2.inl \
+		glm/vec3.hpp \
+		glm/detail/type_vec3.hpp \
+		glm/detail/type_vec3.inl \
+		glm/vec4.hpp \
+		glm/detail/type_vec4.hpp \
+		glm/detail/type_vec4.inl \
+		glm/detail/type_vec4_simd.inl \
+		glm/mat2x2.hpp \
+		glm/detail/type_mat2x2.hpp \
+		glm/detail/type_mat2x2.inl \
+		glm/matrix.hpp \
+		glm/mat2x3.hpp \
+		glm/detail/type_mat2x3.hpp \
+		glm/detail/type_mat2x3.inl \
+		glm/mat2x4.hpp \
+		glm/detail/type_mat2x4.hpp \
+		glm/detail/type_mat2x4.inl \
+		glm/mat3x2.hpp \
+		glm/detail/type_mat3x2.hpp \
+		glm/detail/type_mat3x2.inl \
+		glm/mat3x3.hpp \
+		glm/detail/type_mat3x3.hpp \
+		glm/detail/type_mat3x3.inl \
+		glm/mat3x4.hpp \
+		glm/detail/type_mat3x4.hpp \
+		glm/detail/type_mat3x4.inl \
+		glm/mat4x2.hpp \
+		glm/detail/type_mat4x2.hpp \
+		glm/detail/type_mat4x2.inl \
+		glm/mat4x3.hpp \
+		glm/detail/type_mat4x3.hpp \
+		glm/detail/type_mat4x3.inl \
+		glm/mat4x4.hpp \
+		glm/detail/type_mat4x4.hpp \
+		glm/detail/type_mat4x4.inl \
+		glm/detail/type_mat4x4_simd.inl \
+		glm/detail/func_matrix.inl \
+		glm/geometric.hpp \
+		glm/detail/func_geometric.inl \
+		glm/exponential.hpp \
+		glm/detail/type_vec1.hpp \
+		glm/detail/func_exponential.inl \
+		glm/vector_relational.hpp \
+		glm/detail/func_vector_relational.inl \
+		glm/detail/func_vector_relational_simd.inl \
+		glm/detail/_vectorize.hpp \
+		glm/detail/func_exponential_simd.inl \
+		glm/simd/exponential.h \
+		glm/common.hpp \
+		glm/detail/func_common.inl \
+		glm/detail/func_common_simd.inl \
+		glm/simd/common.h \
+		glm/detail/func_geometric_simd.inl \
+		glm/simd/geometric.h \
+		glm/detail/func_matrix_simd.inl \
+		glm/simd/matrix.h \
+		glm/trigonometric.hpp \
+		glm/detail/func_trigonometric.inl \
+		glm/detail/func_trigonometric_simd.inl \
+		glm/packing.hpp \
+		glm/detail/func_packing.inl \
+		glm/detail/type_half.hpp \
+		glm/detail/type_half.inl \
+		glm/detail/func_packing_simd.inl \
+		glm/integer.hpp \
+		glm/detail/func_integer.inl \
+		glm/ext/vec1.hpp \
+		glm/detail/type_vec1.inl \
+		glm/detail/func_integer_simd.inl \
+		glm/simd/integer.h \
+		glm/gtc/matrix_transform.hpp \
+		glm/gtc/constants.hpp \
+		glm/gtc/constants.inl \
+		glm/gtc/matrix_transform.inl \
+		Model/model.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 MyForm.o: MyForm.cpp MyForm.h \
-		ui_MyForm.h
+		ui_MyForm.h \
+		MyGLWidget.h \
+		glm/glm.hpp \
+		glm/detail/_fixes.hpp \
+		glm/detail/setup.hpp \
+		glm/simd/platform.h \
+		glm/fwd.hpp \
+		glm/detail/type_int.hpp \
+		glm/detail/type_float.hpp \
+		glm/detail/type_vec.hpp \
+		glm/detail/qualifier.hpp \
+		glm/detail/compute_vector_relational.hpp \
+		glm/detail/type_mat.hpp \
+		glm/vec2.hpp \
+		glm/detail/type_vec2.hpp \
+		glm/detail/_swizzle.hpp \
+		glm/detail/_swizzle_func.hpp \
+		glm/detail/type_vec2.inl \
+		glm/vec3.hpp \
+		glm/detail/type_vec3.hpp \
+		glm/detail/type_vec3.inl \
+		glm/vec4.hpp \
+		glm/detail/type_vec4.hpp \
+		glm/detail/type_vec4.inl \
+		glm/detail/type_vec4_simd.inl \
+		glm/mat2x2.hpp \
+		glm/detail/type_mat2x2.hpp \
+		glm/detail/type_mat2x2.inl \
+		glm/matrix.hpp \
+		glm/mat2x3.hpp \
+		glm/detail/type_mat2x3.hpp \
+		glm/detail/type_mat2x3.inl \
+		glm/mat2x4.hpp \
+		glm/detail/type_mat2x4.hpp \
+		glm/detail/type_mat2x4.inl \
+		glm/mat3x2.hpp \
+		glm/detail/type_mat3x2.hpp \
+		glm/detail/type_mat3x2.inl \
+		glm/mat3x3.hpp \
+		glm/detail/type_mat3x3.hpp \
+		glm/detail/type_mat3x3.inl \
+		glm/mat3x4.hpp \
+		glm/detail/type_mat3x4.hpp \
+		glm/detail/type_mat3x4.inl \
+		glm/mat4x2.hpp \
+		glm/detail/type_mat4x2.hpp \
+		glm/detail/type_mat4x2.inl \
+		glm/mat4x3.hpp \
+		glm/detail/type_mat4x3.hpp \
+		glm/detail/type_mat4x3.inl \
+		glm/mat4x4.hpp \
+		glm/detail/type_mat4x4.hpp \
+		glm/detail/type_mat4x4.inl \
+		glm/detail/type_mat4x4_simd.inl \
+		glm/detail/func_matrix.inl \
+		glm/geometric.hpp \
+		glm/detail/func_geometric.inl \
+		glm/exponential.hpp \
+		glm/detail/type_vec1.hpp \
+		glm/detail/func_exponential.inl \
+		glm/vector_relational.hpp \
+		glm/detail/func_vector_relational.inl \
+		glm/detail/func_vector_relational_simd.inl \
+		glm/detail/_vectorize.hpp \
+		glm/detail/func_exponential_simd.inl \
+		glm/simd/exponential.h \
+		glm/common.hpp \
+		glm/detail/func_common.inl \
+		glm/detail/func_common_simd.inl \
+		glm/simd/common.h \
+		glm/detail/func_geometric_simd.inl \
+		glm/simd/geometric.h \
+		glm/detail/func_matrix_simd.inl \
+		glm/simd/matrix.h \
+		glm/trigonometric.hpp \
+		glm/detail/func_trigonometric.inl \
+		glm/detail/func_trigonometric_simd.inl \
+		glm/packing.hpp \
+		glm/detail/func_packing.inl \
+		glm/detail/type_half.hpp \
+		glm/detail/type_half.inl \
+		glm/detail/func_packing_simd.inl \
+		glm/integer.hpp \
+		glm/detail/func_integer.inl \
+		glm/ext/vec1.hpp \
+		glm/detail/type_vec1.inl \
+		glm/detail/func_integer_simd.inl \
+		glm/simd/integer.h \
+		glm/gtc/matrix_transform.hpp \
+		glm/gtc/constants.hpp \
+		glm/gtc/constants.inl \
+		glm/gtc/matrix_transform.inl \
+		Model/model.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MyForm.o MyForm.cpp
 
 MyGLWidget.o: MyGLWidget.cpp MyGLWidget.h \
