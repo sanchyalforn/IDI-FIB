@@ -339,13 +339,15 @@ void MyGLWidget::carregaShaders()
 
 void MyGLWidget::modelTransformCow() 
 {
-  glm::mat4 TG (1.f);
-  glm::vec3  pos (1.0,-0.75,0.0);
-  TG = glm::translate (TG, pos);
+  glm::mat4 TG(1.f);  // Matriu de transformació
+  glm::vec3  posicio(1.0,-0.75,0.0);
+  TG = glm::rotate(TG, -graus ,glm::vec3(0,1,0));
+  TG = glm::translate(TG, posicio);
   TG = glm::scale(TG, glm::vec3(escalaCow, escalaCow, escalaCow));
   TG = glm::rotate(TG, -(float)M_PI/2 ,glm::vec3(0,1,0));
   TG = glm::rotate(TG, -(float)M_PI/2 ,glm::vec3(1,0,0));
   TG = glm::translate(TG, -centreCow);
+  
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 
 }
@@ -353,9 +355,11 @@ void MyGLWidget::modelTransformCow()
 void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::translate (TG, glm::vec3(1,0.25,0));
-  TG = glm::scale (TG, glm::vec3(escala, escala, escala));
-  TG = glm::translate (TG, -centrePatr);
+  glm::vec3  posicio(1.0,-0.5,0.0);
+  TG = glm::rotate(TG, -graus ,glm::vec3(0,1,0));
+  TG = glm::translate(TG, posicio);
+  TG = glm::scale(TG, glm::vec3(escala, escala, escala));
+  TG = glm::translate(TG, -centrePatr);
   
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
@@ -363,7 +367,7 @@ void MyGLWidget::modelTransformPatricio ()
 void MyGLWidget::modelTransformTerra ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
-  TG = glm::translate (TG, glm::vec3(1,-0.5,0));
+  //TG = glm::translate (TG, glm::vec3(1,-0.5,0));
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
@@ -409,7 +413,7 @@ void MyGLWidget::calculaCapsaModel ()
     if (patr.vertices()[i+2] > maxz)
       maxz = patr.vertices()[i+2];
   }
-  escala = 2.0/(maxy-miny);
+  escala = 0.25/(maxy-miny);
   centrePatr[0] = (minx+maxx)/2.0; centrePatr[1] = (miny+maxy)/2.0; centrePatr[2] = (minz+maxz)/2.0;
 }
 
@@ -435,8 +439,7 @@ void MyGLWidget::calculaCapsaCow ()
     if (Cow.vertices()[i+2] > maxz)
       maxz = Cow.vertices()[i+2];
   }
-
-  escalaCow = 1.0/(maxy-miny);
+  escalaCow = 0.5/(maxz-minz);
   centreCow[0] = (minx+maxx)/2.0; centreCow[1] = (miny+maxy)/2.0; centreCow[2] = (minz+maxz)/2.0;
 }
 
@@ -447,6 +450,13 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
     case Qt::Key_O: { // canvia òptica entre perspectiva i axonomètrica
       perspectiva = !perspectiva;
       projectTransform ();
+      break;
+    }
+
+    case Qt::Key_R: {
+      graus += (float)M_PI/6.0;
+      modelTransformCow();
+      modelTransformPatricio();
       break;
     }
     default: event->ignore(); break;

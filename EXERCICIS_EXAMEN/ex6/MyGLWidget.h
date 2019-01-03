@@ -68,7 +68,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     glm::vec3 centreCow;
     float escala;
     float escalaCow;
-    
+    float graus = 0;
     // radi de l'escena
     float radiEsc;
 
