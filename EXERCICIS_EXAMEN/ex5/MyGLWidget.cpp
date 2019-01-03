@@ -6,7 +6,6 @@ MyGLWidget::MyGLWidget (QWidget* parent) : QOpenGLWidget(parent), program(NULL)
 {
   setFocusPolicy(Qt::StrongFocus);  // per rebre events de teclat
   xClick = yClick = 0;
-  rightClicky = rightClickx = 0;
   DoingInteractive = NONE;
 }
 
@@ -14,14 +13,6 @@ MyGLWidget::~MyGLWidget ()
 {
   if (program != NULL)
     delete program;
-}
-  
-void MyGLWidget::designerZoom(int foverino) {
-  makeCurrent();
-  float fover = foverino/100.0f;
-  FOV = fover;
-  projectTransform();
-  update();
 }
 
 void MyGLWidget::initializeGL ()
@@ -33,25 +24,25 @@ void MyGLWidget::initializeGL ()
   glEnable (GL_DEPTH_TEST);
   carregaShaders();
   createBuffersPatricio();
+  createBuffersCow();
   createBuffersTerraIParet();
 
   iniEscena();
   iniCamera();
 }
 
-void MyGLWidget::iniEscena () {
+void MyGLWidget::iniEscena ()
+{
   radiEsc = sqrt(5);  
 }
 
-void MyGLWidget::iniCamera () {
+void MyGLWidget::iniCamera ()
+{
   angleY = 0.0;
   perspectiva = true;
-  ra = 1.0f;
-  FOV = float(M_PI/3.0);
-  angleinit = FOV/2;
+
   projectTransform ();
   viewTransform ();
-  //modelTransformCamara();
 }
 
 void MyGLWidget::paintGL () 
@@ -69,26 +60,83 @@ void MyGLWidget::paintGL ()
   // pintem
   glDrawArrays(GL_TRIANGLES, 0, 12);
 
-  // Activem el VAO per a pintar el Patricio
+
   glBindVertexArray (VAO_Patr);
-  modelTransformPatricio1 ();
-
-  // Pintem l'escena
+  modelTransformPatricio ();
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
 
-  modelTransformPatricio2 ();
-  glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
+  glBindVertexArray (VAO_Cow);
+  modelTransformCow ();
+  glDrawArrays(GL_TRIANGLES, 0, Cow.faces().size()*3);
   
   glBindVertexArray(0);
 }
 
-void MyGLWidget::resizeGL (int w, int h) {
+void MyGLWidget::resizeGL (int w, int h) 
+{
+  // Aquí anirà el codi que cal fer quan es redimensiona la finestra
+}
+
+void MyGLWidget::createBuffersCow ()
+{
+  // Carreguem el model de l'OBJ - Atenció! Abans de crear els buffers!
+  Cow.load("./models/cow.obj");
+
+  // Calculem la capsa contenidora del model
+  calculaCapsaCow ();
   
-  glViewport(0, 0, w, h);
-  float raV = float(w)/float(h);
-  ra = raV;
-  if (raV < 1.0) FOV = 2.0f*atan(tan(angleinit)/raV);
-  projectTransform();
+  // Creació del Vertex Array Object del Cowicio
+  glGenVertexArrays(1, &VAO_Cow);
+  glBindVertexArray(VAO_Cow);
+
+  // Creació dels buffers del model Cow
+  GLuint VBO_Cow[6];
+  // Buffer de posicions
+  glGenBuffers(6, VBO_Cow);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_Cow[0]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*Cow.faces().size()*3*3, Cow.VBO_vertices(), GL_STATIC_DRAW);
+
+  // Activem l'atribut vertexLoc
+  glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(vertexLoc);
+
+  // Buffer de normals
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_Cow[1]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*Cow.faces().size()*3*3, Cow.VBO_normals(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(normalLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(normalLoc);
+
+  // En lloc del color, ara passem tots els paràmetres dels materials
+  // Buffer de component ambient
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_Cow[2]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*Cow.faces().size()*3*3, Cow.VBO_matamb(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matambLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matambLoc);
+
+  // Buffer de component difusa
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_Cow[3]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*Cow.faces().size()*3*3, Cow.VBO_matdiff(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matdiffLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matdiffLoc);
+
+  // Buffer de component especular
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_Cow[4]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*Cow.faces().size()*3*3, Cow.VBO_matspec(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matspecLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matspecLoc);
+
+  // Buffer de component shininness
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_Cow[5]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*Cow.faces().size()*3, Cow.VBO_matshin(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(matshinLoc, 1, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(matshinLoc);
+
+glBindVertexArray(0);
 }
 
 void MyGLWidget::createBuffersPatricio ()
@@ -156,20 +204,20 @@ void MyGLWidget::createBuffersPatricio ()
 
 void MyGLWidget::createBuffersTerraIParet ()
 {
-  // VBO amb la posició dels vèrtexs
-  glm::vec3 posterra[12] = {
-	glm::vec3(-2.0, -1.0, 2.0),
-	glm::vec3(2.0, -1.0, 2.0),
-	glm::vec3(-2.0, -1.0, -2.0),
-	glm::vec3(-2.0, -1.0, -2.0),
-	glm::vec3(2.0, -1.0, 2.0),
-	glm::vec3(2.0, -1.0, -2.0),
-	glm::vec3(-2.0, -1.0, -2.0),
-	glm::vec3(2.0, -1.0, -2.0),
-	glm::vec3(-2.0, 1.0, -2.0),
-	glm::vec3(-2.0, 1.0, -2.0),
-	glm::vec3(2.0, -1.0, -2.0),
-	glm::vec3(2.0, 1.0, -2.0)
+    // VBO amb la posició dels vèrtexs
+    glm::vec3 posterra[12] = {
+    glm::vec3(-2.0, -1.0, 2.0),
+    glm::vec3(2.0, -1.0, 2.0),
+    glm::vec3(-2.0, -1.0, -2.0),
+    glm::vec3(-2.0, -1.0, -2.0),
+    glm::vec3(2.0, -1.0, 2.0),
+    glm::vec3(2.0, -1.0, -2.0),
+    glm::vec3(-2.0, -1.0, -2.0),
+    glm::vec3(2.0, -1.0, -2.0),
+    glm::vec3(-2.0, 1.0, -2.0),
+    glm::vec3(-2.0, 1.0, -2.0),
+    glm::vec3(2.0, -1.0, -2.0),
+    glm::vec3(2.0, 1.0, -2.0)
   }; 
 
   // VBO amb la normal de cada vèrtex
@@ -289,34 +337,25 @@ void MyGLWidget::carregaShaders()
   viewLoc = glGetUniformLocation (program->programId(), "view");
 }
 
-/*
-void MyGLWidget::modelTransformCamara (){
-  glm::vec3 color = glm::vec3(0.0,0.8,0.8);
-  glUniform3fv(colFocus, 1, &color[0]);
+void MyGLWidget::modelTransformCow() 
+{
+  glm::mat4 TG (1.f);
+  glm::vec3  pos (1.0,-0.75,0.0);
+  TG = glm::translate(TG, pos);
+  TG = glm::scale(TG, glm::vec3(escalaCow, escalaCow, escalaCow));
+  TG = glm::translate(TG, -centreCow);
+  TG = glm::rotate(TG, -(float)M_PI/2 ,glm::vec3(0,1,0));
+  TG = glm::rotate(TG, -(float)M_PI/2 ,glm::vec3(1,0,0));
+  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 
-  glm::vec3 llum = glm::vec3(0.2,0.2,0.2);
-  glUniform3fv(llumAmbient, 1, &llum[0]);
-
-  glm::vec4 pos = glm::vec4(0,0,0,1);
-  glUniform4fv(posFocus, 1, &pos[0]);
 }
-*/
 
-void MyGLWidget::modelTransformPatricio1 ()
+void MyGLWidget::modelTransformPatricio ()
 {
   glm::mat4 TG(1.f);  // Matriu de transformació
   TG = glm::scale(TG, glm::vec3(escala, escala, escala));
   TG = glm::translate(TG, -centrePatr);
   
-  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
-}
-
-void MyGLWidget::modelTransformPatricio2 () {
-  glm::mat4 TG (1.f);
-  TG = glm::scale (TG,glm::vec3(escala,escala,escala));
-  TG = glm::translate (TG, glm::vec3(centrePatr[0], centrePatr[1] + 6, centrePatr[2])); //3 es l'altura del patricio
-  TG = glm::rotate(TG, (float)M_PI, glm::vec3(0,0,1));
-
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
@@ -326,10 +365,11 @@ void MyGLWidget::modelTransformTerra ()
   glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
 
-void MyGLWidget::projectTransform () {
+void MyGLWidget::projectTransform ()
+{
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
-    Proj = glm::perspective(FOV, 1.0f, radiEsc, 3.0f*radiEsc);
+    Proj = glm::perspective(float(M_PI/3.0), 1.0f, radiEsc, 3.0f*radiEsc);
   else
     Proj = glm::ortho(-radiEsc, radiEsc, -radiEsc, radiEsc, radiEsc, 3.0f*radiEsc);
 
@@ -371,6 +411,33 @@ void MyGLWidget::calculaCapsaModel ()
   centrePatr[0] = (minx+maxx)/2.0; centrePatr[1] = (miny+maxy)/2.0; centrePatr[2] = (minz+maxz)/2.0;
 }
 
+void MyGLWidget::calculaCapsaCow ()
+{
+  // Càlcul capsa contenidora i valors transformacions inicials
+  float minx, miny, minz, maxx, maxy, maxz;
+  minx = maxx = Cow.vertices()[0];
+  miny = maxy = Cow.vertices()[1];
+  minz = maxz = Cow.vertices()[2];
+  for (unsigned int i = 3; i < Cow.vertices().size(); i+=3)
+  {
+    if (Cow.vertices()[i+0] < minx)
+      minx = Cow.vertices()[i+0];
+    if (Cow.vertices()[i+0] > maxx)
+      maxx = Cow.vertices()[i+0];
+    if (Cow.vertices()[i+1] < miny)
+      miny = Cow.vertices()[i+1];
+    if (Cow.vertices()[i+1] > maxy)
+      maxy = Cow.vertices()[i+1];
+    if (Cow.vertices()[i+2] < minz)
+      minz = Cow.vertices()[i+2];
+    if (Cow.vertices()[i+2] > maxz)
+      maxz = Cow.vertices()[i+2];
+  }
+
+  escalaCow = 2.0/(maxy-miny);
+  centreCow[0] = (minx+maxx)/2.0; centreCow[1] = (miny+maxy)/2.0; centreCow[2] = (minz+maxz)/2.0;
+}
+
 void MyGLWidget::keyPressEvent(QKeyEvent* event) 
 {
   makeCurrent();
@@ -391,11 +458,10 @@ void MyGLWidget::mousePressEvent (QMouseEvent *e)
   yClick = e->y();
 
   if (e->button() & Qt::LeftButton &&
-      !(e->modifiers() & (Qt::ShiftModifier|Qt::AltModifier|Qt::ControlModifier)))
+      ! (e->modifiers() & (Qt::ShiftModifier|Qt::AltModifier|Qt::ControlModifier)))
   {
     DoingInteractive = ROTATE;
   }
-
 }
 
 void MyGLWidget::mouseReleaseEvent( QMouseEvent *)
@@ -403,30 +469,15 @@ void MyGLWidget::mouseReleaseEvent( QMouseEvent *)
   DoingInteractive = NONE;
 }
 
-void MyGLWidget::mouseMoveEvent(QMouseEvent *e) {
+void MyGLWidget::mouseMoveEvent(QMouseEvent *e)
+{
   makeCurrent();
   // Aqui cal que es calculi i s'apliqui la rotacio o el zoom com s'escaigui...
-  if (DoingInteractive == ROTATE) {
+  if (DoingInteractive == ROTATE)
+  {
     // Fem la rotació
     angleY += (e->x() - xClick) * M_PI / 180.0;
     viewTransform ();
-  }
-
-  if (e -> button() == Qt::RightButton) {
-    if (rightClicky < yClick) {
-      if (FOV  >= 0)
-        FOV -= 0.1;
-      emit enviaFov((int)FOV*100);
-    }
-
-    else if (rightClicky > yClick) {
-      if (FOV < 3)
-        FOV += 0.1;
-      emit enviaFov((int)FOV*100); 
-    }
-    update();
-    viewTransform();
-    rightClicky = yClick;
   }
 
   xClick = e->x();
@@ -434,3 +485,5 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent *e) {
 
   update ();
 }
+
+
