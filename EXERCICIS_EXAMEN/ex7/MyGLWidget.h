@@ -73,6 +73,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     float radiEsc, ra;
     float FOV, angleinit;
 
+    glm::vec3 OBS,VRP,up;
+
     typedef  enum {NONE, ROTATE} InteractiveAction;
     InteractiveAction DoingInteractive;
     int xClick, yClick;

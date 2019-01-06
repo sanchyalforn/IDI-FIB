@@ -43,6 +43,11 @@ void MyGLWidget::iniCamera ()
   ra = 1.0f;
   FOV = float(M_PI/3.0);
   angleinit = FOV/2;
+
+  OBS = glm::vec3(-1.0,1.0,-1.0);
+  VRP = glm::vec3(1.0,-0.5,0.0);
+  up = glm::vec3(0,1,0);
+
   projectTransform ();
   viewTransform ();
 }
@@ -381,7 +386,7 @@ void MyGLWidget::projectTransform ()
 {
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
-    Proj = glm::perspective(FOV, ra, radiEsc, 3.0f*radiEsc);
+    Proj = glm::perspective(FOV, ra, 0.1f*radiEsc, 100.0f*radiEsc);
   else
     Proj = glm::ortho(-radiEsc, radiEsc, -radiEsc, radiEsc, radiEsc, 3.0f*radiEsc);
 
@@ -391,8 +396,7 @@ glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 void MyGLWidget::viewTransform ()
 {
   glm::mat4 View;  // Matriu de posició i orientació
-  View = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, -2*radiEsc));
-  View = glm::rotate(View, -angleY, glm::vec3(0, 1, 0));
+  View = glm::lookAt(OBS, VRP, up);
 
   glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
