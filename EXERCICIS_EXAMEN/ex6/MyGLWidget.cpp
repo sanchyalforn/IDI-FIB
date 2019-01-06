@@ -40,7 +40,9 @@ void MyGLWidget::iniCamera ()
 {
   angleY = 0.0;
   perspectiva = true;
-
+  ra = 1.0f;
+  FOV = float(M_PI/3.0);
+  angleinit = FOV/2;
   projectTransform ();
   viewTransform ();
 }
@@ -74,7 +76,11 @@ void MyGLWidget::paintGL ()
 
 void MyGLWidget::resizeGL (int w, int h) 
 {
-  // Aquí anirà el codi que cal fer quan es redimensiona la finestra
+  glViewport(0, 0, w, h);
+  float raV = float(w)/float(h);
+  ra = raV;
+  if (raV < 1.0) FOV = 2.0f*atan(tan(angleinit)/raV);
+  projectTransform();
 }
 
 void MyGLWidget::createBuffersCow ()
@@ -375,11 +381,11 @@ void MyGLWidget::projectTransform ()
 {
   glm::mat4 Proj;  // Matriu de projecció
   if (perspectiva)
-    Proj = glm::perspective(float(M_PI/3.0), 1.0f, radiEsc, 3.0f*radiEsc);
+    Proj = glm::perspective(FOV, ra, radiEsc, 3.0f*radiEsc);
   else
     Proj = glm::ortho(-radiEsc, radiEsc, -radiEsc, radiEsc, radiEsc, 3.0f*radiEsc);
 
-  glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
+glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
 void MyGLWidget::viewTransform ()

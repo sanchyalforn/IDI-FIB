@@ -70,7 +70,8 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     float escalaCow;
     float graus = 0;
     // radi de l'escena
-    float radiEsc;
+    float radiEsc, ra;
+    float FOV, angleinit;
 
     typedef  enum {NONE, ROTATE} InteractiveAction;
     InteractiveAction DoingInteractive;

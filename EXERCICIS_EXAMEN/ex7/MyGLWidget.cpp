@@ -467,6 +467,10 @@ void MyGLWidget::keyPressEvent(QKeyEvent* event)
       graus += (float)M_PI/6.0;
       modelTransformCow();
       modelTransformPatricio();
+
+      glm::vec3 centreP (1.0,-0.5,0.0);
+      VRP = glm::vec3(centreP.x * cos(-graus) + centreP.z * sin(-graus) , centreP.y, -centreP.x * sin(-graus) + centreP.z * cos(-graus));
+      viewTransform();
       break;
     }
     default: event->ignore(); break;
