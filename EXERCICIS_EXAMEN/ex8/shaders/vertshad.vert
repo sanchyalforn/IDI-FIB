@@ -62,8 +62,7 @@ vec3 Phong (vec3 NormSCO, vec3 L, vec4 vertSCO)
     return (colRes + matspec * colFocus * shine); 
 }
 
-
-vec3 LambertCow (vec3 NormSCO, vec3 L) 
+vec3 LambertGrey (vec3 NormSCO, vec3 L) 
 {
     // S'assumeix que els vectors que es reben com a paràmetres estan normalitzats
 
@@ -76,12 +75,12 @@ vec3 LambertCow (vec3 NormSCO, vec3 L)
     return (colRes);
 }
 
-vec3 PhongCow (vec3 NormSCO, vec3 L, vec4 vertSCO) 
+vec3 PhongGrey (vec3 NormSCO, vec3 L, vec4 vertSCO) 
 {
     // Els vectors estan normalitzats
 
     // Inicialitzem color a Lambert
-    vec3 colRes = Lambert (NormSCO, L);
+    vec3 colRes = LambertGrey (NormSCO, L);
 
     // Calculem R i V
     if (dot(NormSCO,L) < 0)
@@ -101,25 +100,24 @@ vec3 PhongCow (vec3 NormSCO, vec3 L, vec4 vertSCO)
 void main()
 {	
     fcolor = matdiff;
+
     gl_Position = proj * view * TG * vec4 (vertex, 1.0);
 
-    vec3 L, lnorm, NormSCOnorm;
+    vec3 L, lnorm, NormSCO;
     vec4 vertexSCO;
 
-    vertexSCO = view * TG * vec4(vertex,1.0);
+    vertexSCO = view * TG * vec4(vertex,1);
+    L = vec3(posFocus - vertexSCO);
+    NormSCO = inverse(transpose(mat3(view * TG))) * normal;
 
-    vec4 posFocusSCO = view * posFocus;
-    L = vec3(posFocusSCO - vertexSCO);
-    vec3 NormSCO = inverse(transpose(mat3(view * TG))) * normal;
-
-   
     L = normalize(L);
     NormSCO = normalize(NormSCO);
-    if (paint == 1) {
-      PhongCow(NormSCO, L, vertexSCO);
+
+    if(paint == 1){
+        fcolor = PhongGrey(NormSCO, L, vertexSCO);
+    }
+    else {
+        fcolor = Phong(NormSCO, L, vertexSCO);
     }
 
-    else {
-      Phong(NormSCO, L, vertexSCO);
-    }
 }

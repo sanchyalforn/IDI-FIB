@@ -69,7 +69,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 
     GLuint colFocus, posFocus, llumAmbient;
 
-    GLuint pinta;
+    GLuint paint;
 
     // model
     Model patr;

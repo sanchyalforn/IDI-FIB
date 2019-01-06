@@ -74,13 +74,15 @@ void MyGLWidget::paintGL ()
   modelTransformPatricio ();
 
   glDrawArrays(GL_TRIANGLES, 0, patr.faces().size()*3);
-
+  
   glBindVertexArray (VAO_Cow);
   modelTransformCow ();
 
-  glUniform1i(pinta,1);
+  glUniform1i(paint,1);
   glDrawArrays(GL_TRIANGLES, 0, Cow.faces().size()*3);
-  glUniform1i(pinta,0);
+
+  glUniform1i(paint,0);
+
   glBindVertexArray(0);
 }
 
@@ -351,7 +353,7 @@ void MyGLWidget::carregaShaders()
   posFocus = glGetUniformLocation (program->programId(), "posFocus");
   llumAmbient = glGetUniformLocation (program->programId(), "llumAmbient");
 
-  pinta = glGetUniformLocation (program->programId(), "pinta");
+  paint = glGetUniformLocation (program->programId(), "paint");
 
   // Demanem identificadors per als uniforms del vertex shader
   transLoc = glGetUniformLocation (program->programId(), "TG");
