@@ -36,62 +36,51 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 
   private:
     void createBuffersPatricio ();
-    void createBuffersCow ();
+    void createBuffersCow();
     void createBuffersTerraIParet ();
-
     void carregaShaders ();
-
     void iniEscena ();
     void iniCamera ();
-
     void projectTransform ();
-
     void viewTransform ();
-
-    void modelTransformCamera ();
     void modelTransformTerra ();
+    void modelTransformCamara ();
     void modelTransformPatricio ();
-    void modelTransformCow ();
-    
+    void modelTransformPatricio2 ();
     void calculaCapsaModel ();
     void calculaCapsaCow ();
 
     // VAO i VBO names
-    GLuint VAO_Patr;
+    GLuint VAO_Patr, VAO_Cow;
     GLuint VAO_Terra;
-    GLuint VAO_Cow;
     // Program
     QOpenGLShaderProgram *program;
     // uniform locations
     GLuint transLoc, projLoc, viewLoc;
     // attribute locations
     GLuint vertexLoc, normalLoc, matambLoc, matdiffLoc, matspecLoc, matshinLoc;
+    GLuint colFocus, posFocus, llumAmbient, test;
 
-    GLuint colFocus, posFocus, llumAmbient;
+    glm::vec3 puntMinim = glm::vec3(-2.0,-1.0,-2.0);
+    glm::vec3 puntMax = glm::vec3(2.0,3.0,2.0);
+    glm::vec3 centreEscena = (puntMax + puntMinim)/2.0f;
 
-    GLuint paint;
-    GLuint eta;
-    int grapo = 0;
+    float radiEscCalc = glm::distance(centreEscena, puntMax);
 
     // model
-    Model patr;
-    Model Cow;
+    Model patr, Cow;
     // paràmetres calculats a partir de la capsa contenidora del model
-    glm::vec3 centrePatr;
-    glm::vec3 centreCow;
-    float escala;
-    float escalaCow;
-    float graus = 0;
+    glm::vec3 centrePatr, centreCow;
+    float escala, escalaCow;
     // radi de l'escena
     float radiEsc, ra;
     float FOV, angleinit;
-
-    glm::vec3 OBS,VRP,up;
+    float angleRotacio = 0.0;
 
     typedef  enum {NONE, ROTATE} InteractiveAction;
     InteractiveAction DoingInteractive;
-    int xClick, yClick;
-    float angleY;
+    int xClick, yClick, ry, testint = 0;
+    float angleY, angleX;
     bool perspectiva;
 };
 
